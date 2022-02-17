@@ -12,7 +12,7 @@ También existen repositorios tanto para Kotlin/Android como para Swift/iOS en l
 La idea principal es utilizar este proyecto para publicar retos de creación de pequeñas Apps y soluciones en diferentes tecnologías (principalmente iOS y Android, aunque si quieres puedes hacerlo via web/desktop). Es una manera para intentar "forzarnos" a practicar desarrollo de aplicaciones en base a requisitos y de forma colaborativa dentro de la comunidad.
 
 ## Listado de retos
-### Enero (03/01/22 - 31/01/22)
+### Enero: 03/01/22
 **CONECTA 4:** Crea el juego conecta cuatro. Tienes un ejemplo parecido [aquí](https://solitariosonline.es/conecta-4). 
 
 Requisitos:
@@ -25,7 +25,25 @@ Requisitos:
 * Dos botones para reiniciar la partida en marcha y para resetear el contador de victorias y derrotas.
 * Puedes añadirle todas las funcionalidades extra que consideres.
 
-### Febrero (31/01/22 - 28/02/22)
+Soluciones: [**ENLACES A LOS REPOSITORIOS**](./SolucionesReto01.md)
+
+### Febrero: 03/02/22
+**LA ENCICLOPEDIA STAR WARS:** Crea una app que sirva para listar los personajes de Star Wars y que te permita buscarlos por nombre.
+
+Requisitos:
+
+* Usa el API [https://swapi.dev/](https://swapi.dev/)
+* El diseño es de libre elección.
+* Debe mostrar un listado y un detalle de cada personaje.
+* El listado tendrá que estar paginado.
+* El listado poseerá un filtro de búsqueda.
+* Al seleccionar un personaje del listado, el detalle mostrará los datos que consideres oportunos.
+* OPCIONAL: Detalle de películas, vehículos, naves, especies...
+* OPCIONAL: Foto de cada personaje.
+
+Soluciones: Reto en activo.
+
+### Marzo: 01/03/22
 Pendiente de publicación...
 
 ### ¿Cómo puedo participar?
