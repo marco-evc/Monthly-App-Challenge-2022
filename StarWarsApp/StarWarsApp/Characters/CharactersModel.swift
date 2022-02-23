@@ -14,7 +14,6 @@ struct StarWarsItem: Codable {
   let results: [StarWarsCharacter]?
 
   enum CodingKeys: String, CodingKey {
-
     case count = "count"
     case next = "next"
     case previous = "previous"
@@ -91,5 +90,11 @@ struct StarWarsCharacter: Codable, Identifiable, Equatable {
 extension StarWarsCharacter {
   var id: String {
     self.name ?? ""
+  }
+
+  var imageUrl: String {
+    guard var url = self.url else { return "" }
+    url = url.deletingPrefix("https://swapi.py4e.com/api/people/").replacingOccurrences(of: "/", with: "")
+    return "https://starwars-visualguide.com/assets/img/characters/\(url).jpg"
   }
 }

@@ -8,45 +8,33 @@
 import Combine
 import SwiftUI
 
-enum NetworkErrors:Error {
-  case BadContent
-}
-
 final class CharactersViewModel: ObservableObject {
   @Published var characters = [StarWarsCharacter]()
   @Published var isLoadingPage = false
+  @Published var searchText = ""
 
   // MARK: - Private Properties
+  private let dataService: CharactersService
   private let router: CharactersRouter
-  private var currentPage = 1
-  private var canLoadMorePages = true
   private var cancellables = Set<AnyCancellable>()
-  private var nextPage: String? = nil
-  private var url = URL(string: "https://swapi.dev/api/people/")!
+  private var url = "https://swapi.py4e.com/api/people/"
 
   // MARK: - Initializer
   init(router: CharactersRouter) {
     self.router = router
-    self.loadContent()
+    self.dataService = CharactersService(urlString: url)
+    self.addSuscribers()
   }
 
   // MARK: - Public methods
   func loadMoreContentIfNeeded(currentItem item: StarWarsCharacter?) {
     guard let item = item else {
-      self.loadContent()
+      self.dataService.loadMoreCharacters()
       return
     }
     if item == characters.last {
-      self.loadContent()
+      self.dataService.loadMoreCharacters()
     }
-  }
-
-  func imageUrlFor(item: StarWarsCharacter?) -> URL {
-    var currentIndex = ""
-    if let index =  item?.url?.replacingOccurrences(of: "https://swapi.dev/api/people/", with: "") {
-      currentIndex = index.replacingOccurrences(of: "/", with: "")
-    }
-    return URL(string: "https://starwars-visualguide.com/assets/img/characters/\(currentIndex).jpg")!
   }
 
   func characterDetail(forCharacter character: StarWarsCharacter) -> CharacterDetailView {
@@ -54,29 +42,29 @@ final class CharactersViewModel: ObservableObject {
   }
 
   // MARK: - Private methods
-  private func loadContent() {
-    guard !isLoadingPage && canLoadMorePages else {
-      return
-    }
+  private func addSuscribers() {
+    // Updates all characters
+    dataService.$isLoadingPage
+      .sink { isLoading in
+        self.isLoadingPage = isLoading
+      }
+      .store(in: &cancellables)
 
-    self.isLoadingPage = true
-    URLSession.shared.dataTaskPublisher(for: url)
-      .map(\.data)
-      .decode(type: StarWarsItem.self, decoder: JSONDecoder())
-      .receive(on: DispatchQueue.main)
-      .handleEvents(receiveOutput:  { [weak self] response in
-        guard let self = self,
-              let charactersCount = response.count else { return }
-        self.canLoadMorePages = charactersCount != self.characters.count
-        self.isLoadingPage = false
-        self.currentPage += 1
-        self.url = URL(string: response.next ?? "")!
-      })
-      .map({ response in
-        guard let characters = response.results else { return [StarWarsCharacter]() }
-        return self.characters + characters
-      })
-      .catch({ _ in Just(self.characters) })
-      .assign(to: &$characters)
+    $searchText
+      .combineLatest(dataService.$characters)
+      .debounce(for: .seconds(0.3), scheduler: DispatchQueue.main)
+      .map { (text, startingCharacters) -> [StarWarsCharacter] in
+        guard !text.isEmpty else {
+          return startingCharacters
+        }
+        let lowerCasedText = text.lowercased()
+        return startingCharacters.filter { (character) -> Bool in
+          return character.name?.lowercased().contains(lowerCasedText) ?? false
+        }
+      }
+      .sink {[weak self] returnedCharacters in
+        self?.characters = returnedCharacters
+      }
+      .store(in: &cancellables)
   }
 }

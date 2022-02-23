@@ -6,27 +6,35 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct CharacterCardView: View {
-  let url: URL
-  let name: String
+  let character: StarWarsCharacter
 
   var body: some View {
-    ZStack(alignment: .top) {
-//      RoundedRectangle(cornerRadius: 25, style: .continuous)
-//        .fill(Color(.systemGray3))
-        AsyncImage(url: url) {
-          ProgressView()
-        } image: {
-          Image(uiImage: $0)
-            .resizable()
-        }.aspectRatio(contentMode: .fit)
-          .cornerRadius(8)
+    ZStack(alignment: .bottom) {
+      self.imageView
+      self.blurredView
+    }
+    .background(Color.black)
+    .clipShape(RoundedRectangle(cornerRadius: 15, style: .continuous))
+    .shadow(color: .black, radius: 10, x: 0, y: 0)
+  }
 
-        Text(name)
-          .font(.system(size: 14, weight: .semibold, design: .rounded))
-          .foregroundColor(.white)
-      }
-      .multilineTextAlignment(.center)
+  private var blurredView: some View {
+    ZStack(alignment: .bottom) {
+      Color(.systemGray)
+        .opacity(0.7)
+      Text(character.name ?? "Missing name")
+        .font(.system(size: 18, weight: .semibold, design: .rounded))
+        .foregroundColor(.white)
+        .padding(.vertical, 8)
+    }.frame(height: 30)
+  }
+
+  private var imageView: some View {
+    KFImage(URL(string: character.imageUrl))
+      .resizable()
+      .scaledToFill()
   }
 }
